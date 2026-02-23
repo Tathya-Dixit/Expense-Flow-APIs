@@ -16,6 +16,10 @@ class Category(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='categories')
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f'{self.name} - {self.type_choice} - {self.created_by}'
+    
+
 
 class Transaction(models.Model):
 
@@ -38,6 +42,10 @@ class Transaction(models.Model):
     is_deleted = models.BooleanField(default=False)
     deleted_at = models.DateTimeField(null=True, blank=True)
 
+    def __str__(self):
+        return f'{amount} - {type_choice} - {self.created_by}'
+    
+
 
 class Budget(models.Model):
     category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL, related_name='budgets')
@@ -49,7 +57,10 @@ class Budget(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
+    def __str__(self):
+        return f'{self.category} , {self.limit}, {self.month}, {self.year} - {self.created_by}'
+    
+
     class Meta:
         unique_together = ('created_by', 'category', 'month', 'year')
-
 
