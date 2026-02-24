@@ -2,11 +2,12 @@ from django.shortcuts import render
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from django.db.models import Q
+from django.utils import timezone
 
 import logging
 
-from expense.serializers import CategorySerializer
-from expense.models import Category
+from expense.serializers import CategorySerializer, TransactionSerializer
+from expense.models import Category, Transaction
 
 logger = logging.getLogger(__name__)
 
@@ -30,4 +31,30 @@ class CategoryViewSet(viewsets.ModelViewSet):
         logger.info(f"Deleting category: {instance.name}")
         instance.delete()
         logger.info(f"Category deleted: {instance.name}")
+
+
+
+class TransactionViewSet(viewsets.ModelViewSet):
+    serializer_class = TransactionSerializer
+    
+    def get_queryset(self):
+        return Transaction.objects.filter(Q(created_by = self.request.user) & Q(is_deleted = False))
+    
+    def perform_create(self, serializer):
+        logger.info(f"User - {self.request.user} creating transaction")
+        serializer.save(created_by = self.request.user)
+        logger.info(f"Transaction created Tn-ID: {serializer.instance.id}")
+    
+    def perform_update(self, serializer):
+        logger.info(f"Updating transaction Tn-ID: {serializer.instance.id}")
+        serializer.save()
+        logger.info(f"Transaction updated Tn-ID: {serializer.instance.id}")
+    
+    def perform_destroy(self, instance):
+        logger.info(f"Deleting transaction Tn-ID: {instance.id}")
+        instance.is_deleted = True
+        instance.deleted_at = timezone.now()
+        instance.save()
+        logger.info(f"Transaction deleted Tn-ID: {instance.id}")
+    
 

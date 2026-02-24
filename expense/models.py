@@ -43,7 +43,7 @@ class Transaction(models.Model):
     deleted_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return f'{amount} - {type_choice} - {self.created_by}'
+        return f'{self.amount} - {self.type_choice} - {self.created_by}'
     
 
 

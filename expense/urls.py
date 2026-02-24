@@ -6,5 +6,6 @@ from expense import views
 router = DefaultRouter()
 
 router.register('categories', views.CategoryViewSet, basename='categories')
+router.register('transactions', views.TransactionViewSet, basename='transactions')
 
 urlpatterns = router.urls
