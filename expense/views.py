@@ -17,6 +17,22 @@ class CategoryViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Category.objects.filter(Q(created_by = self.request.user) | Q(is_predefined = True))
     
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        if instance.is_predefined :
+            return Response({"message" : "can not edit predefined categories"}, status=status.HTTP_403_FORBIDDEN)
+        
+        return super().update(request, *args, **kwargs)
+    
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        if instance.is_predefined :
+            return Response({"message" : "can not delete predefined categories"}, status=status.HTTP_403_FORBIDDEN)
+        
+        return super().destroy(request, *args, **kwargs)
+
     def perform_create(self, serializer):
         logger.info(f"User - {self.request.user} creating category")
         serializer.save(created_by = self.request.user)
