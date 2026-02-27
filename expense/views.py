@@ -87,13 +87,12 @@ class BudgetViewSet(viewsets.ModelViewSet):
         logger.info(f"Budget created : \n[user : {instance.created_by}, category : {instance.category}, month : {instance.month}, year : {instance.year}]")
     
     def perform_update(self, serializer):
+        instance = serializer.instance
         logger.info(f"Updating Budget: \n[user : {instance.created_by}, category : {instance.category}, month : {instance.month}, year : {instance.year}]")
-        serializer.save()
+        instance = serializer.save()
         logger.info(f"Budget Updated: \n[user : {instance.created_by}, category : {instance.category}, month : {instance.month}, year : {instance.year}]")
     
     def perform_destroy(self, instance):
         logger.info(f"Deleting Budget: \n[user : {instance.created_by}, category : {instance.category}, month : {instance.month}, year : {instance.year}]")
-        instance.is_deleted = True
-        instance.deleted_at = timezone.now()
-        instance.save()
+        instance.delete()
         logger.info(f"Budget Delete: \n[user : {instance.created_by}, category : {instance.category}, month : {instance.month}, year : {instance.year}]")

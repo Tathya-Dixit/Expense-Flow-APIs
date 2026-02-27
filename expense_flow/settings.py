@@ -195,7 +195,7 @@ LOGGING = {
             'handlers': ['console', 'file'],
             'level': 'INFO',
         },
-        'tasks': {
+        'expense': {
             'handlers': ['console', 'file'],
             'level': 'INFO',
         },

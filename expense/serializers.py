@@ -41,9 +41,9 @@ class BudgetSerializer(serializers.ModelSerializer):
     
     def validate(self, data):
         user = self.context['request'].user
-        category = data.get('category', None)
-        month = data.get('month', None)
-        year = data.get('year', None)
+        category = data.get('category', getattr(self.instance, 'category', None)) # just using data.get(category, None) will return None in case the category isn't provided in PATCH request, to avoid that we pull data directly from the instance.
+        month = data.get('month', getattr(self.instance, 'month', None))
+        year = data.get('year', getattr(self.instance, 'year', None))
 
         qs = Budget.objects.filter(created_by = user, category = category, month = month, year = year)
         
