@@ -6,8 +6,8 @@ from django.utils import timezone
 
 import logging
 
-from expense.serializers import CategorySerializer, TransactionSerializer
-from expense.models import Category, Transaction
+from expense.serializers import CategorySerializer, TransactionSerializer, BudgetSerializer
+from expense.models import Category, Transaction, Budget
 
 logger = logging.getLogger(__name__)
 
@@ -74,3 +74,26 @@ class TransactionViewSet(viewsets.ModelViewSet):
         logger.info(f"Transaction deleted Tn-ID: {instance.id}")
     
 
+
+class BudgetViewSet(viewsets.ModelViewSet):
+    serializer_class = BudgetSerializer
+    
+    def get_queryset(self):
+        return Budget.objects.filter(created_by = self.request.user)
+    
+    def perform_create(self, serializer):
+        logger.info(f"User - {self.request.user} creating budget")
+        instance = serializer.save(created_by = self.request.user)
+        logger.info(f"Budget created : \n[user : {instance.created_by}, category : {instance.category}, month : {instance.month}, year : {instance.year}]")
+    
+    def perform_update(self, serializer):
+        logger.info(f"Updating Budget: \n[user : {instance.created_by}, category : {instance.category}, month : {instance.month}, year : {instance.year}]")
+        serializer.save()
+        logger.info(f"Budget Updated: \n[user : {instance.created_by}, category : {instance.category}, month : {instance.month}, year : {instance.year}]")
+    
+    def perform_destroy(self, instance):
+        logger.info(f"Deleting Budget: \n[user : {instance.created_by}, category : {instance.category}, month : {instance.month}, year : {instance.year}]")
+        instance.is_deleted = True
+        instance.deleted_at = timezone.now()
+        instance.save()
+        logger.info(f"Budget Delete: \n[user : {instance.created_by}, category : {instance.category}, month : {instance.month}, year : {instance.year}]")
