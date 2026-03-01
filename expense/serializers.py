@@ -30,6 +30,14 @@ class TransactionSerializer(serializers.ModelSerializer):
         fields = ['id', 'amount', 'type', 'description', 'payment_method', 'category_details', 'category', 'transaction_date', 'created_at']
         read_only_fields = ['created_at']
     
+    def validate(self, data):
+        category = data.get('category')
+        type_choice = data.get('type_choice')
+
+        if category and type_choice and category.type_choice != type_choice:
+            raise serializers.ValidationError('Transaction type must match category type')
+        return data
+    
 
 
 class BudgetSerializer(serializers.ModelSerializer):
