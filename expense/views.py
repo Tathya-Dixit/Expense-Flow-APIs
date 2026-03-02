@@ -8,11 +8,16 @@ import logging
 
 from expense.serializers import CategorySerializer, TransactionSerializer, BudgetSerializer
 from expense.models import Category, Transaction, Budget
+from expense.filters import TransactionFilter
 
 logger = logging.getLogger(__name__)
 
 class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
+    filterset_fields = ['type_choice', 'is_predefined']
+    search_fields = ['name', 'description']
+    ordering_fields = ['created_at']
+    ordering = ['created_at']
 
     def get_queryset(self):
         return Category.objects.filter(Q(created_by = self.request.user) | Q(is_predefined = True))
@@ -52,7 +57,11 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 class TransactionViewSet(viewsets.ModelViewSet):
     serializer_class = TransactionSerializer
-    
+    filterset_class = TransactionFilter
+    search_fields = ['description']
+    ordering_fields = ['transaction_date']
+    ordering = ['transaction_date']
+
     def get_queryset(self):
         return Transaction.objects.filter(Q(created_by = self.request.user) & Q(is_deleted = False))
     
@@ -77,6 +86,10 @@ class TransactionViewSet(viewsets.ModelViewSet):
 
 class BudgetViewSet(viewsets.ModelViewSet):
     serializer_class = BudgetSerializer
+    filterset_fields = ['month', 'year', 'category']
+    ordering_fields = ['created_at', 'updated_at']
+    ordering = ['created_at']
+
     
     def get_queryset(self):
         return Budget.objects.filter(created_by = self.request.user)
