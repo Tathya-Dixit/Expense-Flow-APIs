@@ -39,3 +39,12 @@ class RegisterAPIView(APIView):
             logger.error(f"Registration failed : {serializer.errors}")
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class SelfAPIView(APIView):
+    def get(self, request):
+        user = request.user
+        return Response({
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+        })
+
